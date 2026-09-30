@@ -24,6 +24,10 @@
       <HintPath>$(PtcglManagedDir)\UnityEngine.CoreModule.dll</HintPath>
       <Private>false</Private>
     </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(PtcglManagedDir)\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
     <Reference Include="UnityEngine.AnimationModule">
       <HintPath>$(PtcglManagedDir)\UnityEngine.AnimationModule.dll</HintPath>
       <Private>false</Private>

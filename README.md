@@ -1,6 +1,6 @@
 # PTCGL-Fast-Animation
 
-BepInEx 5 插件，目标是给 Pokémon TCG Live 的表现层动画做倍率或跳过。当前版本 **0.1.0 只记录动画，不改播放速度**。
+BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过。当前版本 **0.3.0** 覆盖四类：补充包翻牌的 Reveal / Outro、奖励弹窗的进入和离开、货币飞向顶栏、图鉴研究任务领取后的勾选和套装完成动画。对战内、按钮反馈、加载转圈和待机不改。
 
 客户端核对：Unity `6000.3.5f2`，BepInEx `5.4.23.5`。游戏目录里已经有 FastStartup（Doorstop 入口）和 `PTCGL.CodeRedeemMOD`（`com.ptcgl.coderedeemmod`，调试键默认 F8）。本插件的 Harmony id 是 `com.ptcgl.fastanimation`，只挂在 `BepInEx\plugins`，不改 `doorstop_config.ini`，也不 patch FastStartup、兑换码或 `ManagerBase`。
 
@@ -18,7 +18,20 @@ Unity **Animator** 是主路径，RainierClient 里大约一百多个类型会�
 
 全局 `Time.timeScale` 不适合当加速开关：`ActionTimer`、`MatchClockAnimationTrigger` 和回合计时跟动画挤在同一套时间里。后面做倍率时只动表现播放器（`Animator.speed`、DOTween、卡牌 `durationInSeconds`），并单独放过时钟。
 
+## 加速
+
+倍率在 `BepInEx\config\com.ptcgl.fastanimation.cfg` 的 `Speed.Multiplier`，默认 **2**，运行时限制在 1 到 8。再高的话 Animator 事件可能被跳过，开包流程会停住。`Speed.Skip` 为 true 时，下面打开的类别直接跳到结束并照常走完成回调，不再使用倍率。翻开的卡牌会停在正面，直到你自己关掉。
+
+- `Speed.BoosterCards`：卡牌 Reveal、Outro，以及跟它们一起播的滑入和缩放。翻开后的 Idle 保持原速。非最后一张的 Outro 会乘在游戏自己的快进速度上。
+- `Speed.RewardPopups`：`ContentItemSequenceAnimation` 的进入和离开。货币、代币、补充包，以及 Build and Battle 的开包层都走这里。
+- `Speed.CurrencyFlight`：货币图标飞向顶栏。只认层级里带 Currency 的 `MoveToWithCurveAnim`。
+- `Speed.MissionRewards`：图鉴研究任务领取后的勾选动画，以及套装完成那条全屏序列。序列结束会把速度设回 1。跳过时套装完成序列不会播，直接继续后面的流程。
+
+改配置后重启游戏。启动日志里应有 `Speed=2` 和 `[Speed] patched`。
+
 ## 探针怎么记
+
+探针默认关闭。需要再采样时把 `Probe.Enabled` 设成 `true`。
 
 进游戏后看 `BepInEx\LogOutput.log`，搜 `[Anim]` 和 `[Probe]`。
 
@@ -43,7 +56,7 @@ Unity **Animator** 是主路径，RainierClient 里大约一百多个类型会�
 dotnet build src/PTCGL.FastAnimation/PTCGL.FastAnimation.csproj -c Release -p:CopyPluginToGame=true
 ```
 
-DLL 会复制到游戏的 `BepInEx\plugins\PTCGL.FastAnimation.dll`。游戏正在运行时文件会被锁住，先退出再编译。重启游戏后，日志里应出现 `PTCGL.FastAnimation 0.1.0 awake`，且兑换码 mod 仍是 `Chainloader` 加载的另一个插件。
+DLL 会复制到游戏的 `BepInEx\plugins\PTCGL.FastAnimation.dll`。游戏正在运行时文件会被锁住，先退出再编译。重启游戏后，日志里应出现 `PTCGL.FastAnimation 0.3.0 awake`，且兑换码 mod 仍是 `Chainloader` 加载的另一个插件。
 
 ## License
 

@@ -4,6 +4,7 @@ using HarmonyLib;
 using PTCGL.FastAnimation.Compat;
 using PTCGL.FastAnimation.Config;
 using PTCGL.FastAnimation.Probe;
+using PTCGL.FastAnimation.Speed;
 using UnityEngine;
 
 namespace PTCGL.FastAnimation
@@ -13,7 +14,7 @@ namespace PTCGL.FastAnimation
     {
         public const string PluginGuid = "com.ptcgl.fastanimation";
         public const string PluginName = "PTCGL.FastAnimation";
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "0.3.0";
 
         internal static ManualLogSource Log = null!;
         internal static PluginConfig Cfg = null!;
@@ -24,14 +25,22 @@ namespace PTCGL.FastAnimation
             Cfg = new PluginConfig(Config);
             AnimationCatalog.Reset();
 
-            Log.LogInfo($"{PluginName} {PluginVersion} awake. Probe={Cfg.EnableProbe.Value} (playback is not modified).");
+            var multiplier = Playback.Multiplier;
+            Log.LogInfo($"{PluginName} {PluginVersion} awake. Speed={multiplier} Skip={Cfg.SkipAnimations.Value} Booster={Cfg.SpeedBoosterCards.Value} Reward={Cfg.SpeedRewardPopups.Value} Mission={Cfg.SpeedMissionRewards.Value} Currency={Cfg.SpeedCurrencyFlight.Value} Probe={Cfg.EnableProbe.Value}.");
+            if (Cfg.SpeedMultiplier.Value > Playback.MaxMultiplier)
+                Log.LogWarning($"[Speed] multiplier {Cfg.SpeedMultiplier.Value} capped at {Playback.MaxMultiplier} so Animator events still fire.");
             Log.LogInfo("[Compat] Harmony id com.ptcgl.fastanimation. Does not patch FastStartup, CodeRedeem, Doorstop, or coupon APIs.");
 
             var harmony = new Harmony(PluginGuid);
-            var patched = SoftPatcher.Apply(harmony, msg => Log.LogInfo(msg));
-            Log.LogInfo($"[Probe] entry patches={patched}. Dump hotkey={Cfg.DumpHotkey.Value}.");
+            var speedPatches = SpeedPatcher.Apply(harmony, msg => Log.LogInfo(msg));
+            Log.LogInfo($"[Speed] patches={speedPatches}.");
 
-            gameObject.AddComponent<ProbeBehaviour>();
+            if (Cfg.EnableProbe.Value)
+            {
+                var patched = SoftPatcher.Apply(harmony, msg => Log.LogInfo(msg));
+                Log.LogInfo($"[Probe] entry patches={patched}. Dump hotkey={Cfg.DumpHotkey.Value}.");
+                gameObject.AddComponent<ProbeBehaviour>();
+            }
         }
     }
 
