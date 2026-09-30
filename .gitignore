@@ -1,0 +1,20 @@
+## Build
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Local machine overrides
+Directory.Build.user.props
+
+## Game binaries (never commit)
+libs/
+*.dll
+
+## Logs
+*.log
+
+## Local scratch
+.tmp-decompile/
+artifacts/

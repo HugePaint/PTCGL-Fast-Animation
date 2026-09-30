@@ -1,0 +1,6 @@
+<Project>
+  <PropertyGroup>
+    <PtcglGameRoot>C:\Users\yangyuhan\The Pokémon Company International\Pokémon Trading Card Game Live</PtcglGameRoot>
+    <PtcglManagedDir>$(PtcglGameRoot)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+</Project>

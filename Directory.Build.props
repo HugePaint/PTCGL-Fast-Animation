@@ -1,0 +1,52 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and '$(PTCGL_MANAGED)' != ''">
+    <PtcglManagedDir>$(PTCGL_MANAGED)</PtcglManagedDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PtcglGameRoot)' == '' and '$(PTCGL_GAME_ROOT)' != ''">
+    <PtcglGameRoot>$(PTCGL_GAME_ROOT)</PtcglGameRoot>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and '$(PtcglGameRoot)' != ''">
+    <PtcglManagedDir>$(PtcglGameRoot)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+
+  <Import Project="Directory.Build.user.props" Condition="Exists('Directory.Build.user.props')" />
+
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and '$(PtcglGameRoot)' != ''">
+    <PtcglManagedDir>$(PtcglGameRoot)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PtcglGameRoot)' == ''">
+    <_Candidate0>C:\Users\yangyuhan\The Pokémon Company International\Pokémon Trading Card Game Live</_Candidate0>
+    <_Candidate1>d:\Game Files\The Pokémon Company International\Pokémon Trading Card Game Live</_Candidate1>
+    <_Candidate2>C:\Program Files\The Pokémon Company International\Pokémon Trading Card Game Live</_Candidate2>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and Exists('$(_Candidate0)\Pokemon TCG Live_Data\Managed\UnityEngine.CoreModule.dll')">
+    <PtcglGameRoot>$(_Candidate0)</PtcglGameRoot>
+    <PtcglManagedDir>$(_Candidate0)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and Exists('$(_Candidate1)\Pokemon TCG Live_Data\Managed\UnityEngine.CoreModule.dll')">
+    <PtcglGameRoot>$(_Candidate1)</PtcglGameRoot>
+    <PtcglManagedDir>$(_Candidate1)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(PtcglManagedDir)' == '' and Exists('$(_Candidate2)\Pokemon TCG Live_Data\Managed\UnityEngine.CoreModule.dll')">
+    <PtcglGameRoot>$(_Candidate2)</PtcglGameRoot>
+    <PtcglManagedDir>$(_Candidate2)\Pokemon TCG Live_Data\Managed</PtcglManagedDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(PtcglGameRoot)' != ''">
+    <PtcglBepInExCore>$(PtcglGameRoot)\BepInEx\core</PtcglBepInExCore>
+    <PtcglPluginsDir>$(PtcglGameRoot)\BepInEx\plugins</PtcglPluginsDir>
+  </PropertyGroup>
+
+  <Target Name="EnsurePtcglManagedDir" BeforeTargets="ResolveAssemblyReferences;CoreCompile"
+          Condition="'$(MSBuildProjectName)' == 'PTCGL.FastAnimation'">
+    <Error Condition="'$(PtcglManagedDir)' == '' or !Exists('$(PtcglManagedDir)\UnityEngine.CoreModule.dll')"
+           Text="PTCGL Managed folder not found. Set PTCGL_GAME_ROOT or create Directory.Build.user.props." />
+  </Target>
+</Project>
