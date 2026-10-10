@@ -1,22 +1,6 @@
 # PTCGL-Fast-Animation
 
-BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过。当前版本 **0.3.0** 覆盖四类：补充包翻牌的 Reveal / Outro、奖励弹窗的进入和离开、货币飞向顶栏、图鉴研究任务领取后的勾选和套装完成动画。对战内、按钮反馈、加载转圈和待机不改。
-
-客户端核对：Unity `6000.3.5f2`，BepInEx `5.4.23.5`。游戏目录里已经有 FastStartup（Doorstop 入口）和 `PTCGL.CodeRedeemMOD`（`com.ptcgl.coderedeemmod`，调试键默认 F8）。本插件的 Harmony id 是 `com.ptcgl.fastanimation`，只挂在 `BepInEx\plugins`，不改 `doorstop_config.ini`，也不 patch FastStartup、兑换码或 `ManagerBase`。
-
-## 游戏里的动画从哪来
-
-表现播放集中在 `TPCI.RainierClient.dll`。`MatchLogic.dll` 里的 `CoinFlip`、`VFXEffect`、`ActionVFX` 是规则数据，不是播放器。Unity Timeline / Playables 在这些程序集里没有调用。
-
-实际在播的有四条：
-
-Unity **Animator** 是主路径，RainierClient 里大约一百多个类型会碰到 `Animator`。对局里能对上的包括 `CoinFlipOverlay`（硬币）、`OpenCardsView`（开包）、`ContentItem3DAsset_Booster`（卡牌揭示）、`BattleOutro`（胜负，已有 `SkipToSequenceEnd`）、`Card3DViewController`（卡面切换）、`CardMatchVfxAnimController`（攻击结果特效）、`Board3dViewController`（击倒 / 回合指示）、`VersusScreenController`、`FrontEndLoadingAnimManager`、`DialogueManager`、`RankedAnimController`。
-
-**DOTween**（`DG.Tweening`）大约二十来个调用方，用来做位移而不是 Animator clip。卡牌走位在 `CardAnimTimed`、`CardAnimDelay`、`MoveToWithCurveAnim`，手牌布局在 `HandFanCollapsedLayout` / `HandFanExpandedLayout`。
-
-**AnimationClip / legacy Animation** 走 `CardAnimClip` 和 `BenchSlot.flipClip`。主菜单镜头还有 **PathMagic**（`CardAnimPath`、`MainMenu3DController`）。登录界面另有一套 `TPCI.PTCS` 的 `CanvasGroupTweener` / `RectTransformTweener`。
-
-全局 `Time.timeScale` 不适合当加速开关：`ActionTimer`、`MatchClockAnimationTrigger` 和回合计时跟动画挤在同一套时间里。后面做倍率时只动表现播放器（`Animator.speed`、DOTween、卡牌 `durationInSeconds`），并单独放过时钟。
+BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过。当前版本 **0.3.0** 覆盖四类：补充包翻牌的 Reveal / Outro、奖励弹窗的进入和离开、货币飞向顶栏、图鉴研究任务领取后的勾选和套装完成动画。对战内、按钮反馈、加载转圈和待机不改。Harmony id 是 `com.ptcgl.fastanimation`。和另外两个 mod 的边界见 `AGENTS.md`。播放器清单在 `agent/players.md`。
 
 ## 加速
 
@@ -35,7 +19,7 @@ Unity **Animator** 是主路径，RainierClient 里大约一百多个类型会�
 
 进游戏后看 `BepInEx\LogOutput.log`，搜 `[Anim]` 和 `[Probe]`。
 
-第一次看到某个入口或某条 clip 会立刻写一行。同一条再出现只加次数。按 **F6** 把本局目录打全（次数在行首 `xN`）。F8 仍是兑换码 mod，不要改。
+第一次看到某个入口或某条 clip 会立刻写一行。同一条再出现只加次数。按 **F6** 把本局目录打全（次数在行首 `xN`）。
 
 配置在 `BepInEx\config\com.ptcgl.fastanimation.cfg`：`Probe.Enabled`、`LogEntryPoints`、`LogAnimatorClips`、`SampleSeconds`、`DumpHotkey`。
 
