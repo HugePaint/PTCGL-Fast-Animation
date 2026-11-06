@@ -1,6 +1,6 @@
 # PTCGL-Fast-Animation
 
-BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过。当前版本 **0.3.0** 覆盖四类：补充包翻牌的 Reveal / Outro、奖励弹窗的进入和离开、货币飞向顶栏、图鉴研究任务领取后的勾选和套装完成动画。对战内、按钮反馈、加载转圈和待机不改。Harmony id 是 `com.ptcgl.fastanimation`。和另外两个 mod 的边界见 `AGENTS.md`。播放器清单在 `agent/players.md`。
+BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过，并在 Windows 窗口化时允许拖拽缩放。当前版本 **0.4.0**。动画覆盖四类：补充包翻牌的 Reveal / Outro、奖励弹窗的进入和离开、货币飞向顶栏、图鉴研究任务领取后的勾选和套装完成动画。对战内、按钮反馈、加载转圈和待机不改。Harmony id 是 `com.ptcgl.fastanimation`。和另外两个 mod 的边界见 `AGENTS.md`。播放器清单在 `agent/players.md`。
 
 ## 加速
 
@@ -12,6 +12,14 @@ BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过
 - `Speed.MissionRewards`：图鉴研究任务领取后的勾选动画，以及套装完成那条全屏序列。序列结束会把速度设回 1。跳过时套装完成序列不会播，直接继续后面的流程。
 
 改配置后重启游戏。启动日志里应有 `Speed=2` 和 `[Speed] patched`。
+
+## 窗口
+
+只在 Windows 上生效，默认开着。配置在 `BepInEx\config\com.ptcgl.fastanimation.cfg` 的 `Window.Enabled`，默认 **true**，改完要重启。窗口化时保留游戏现有装饰，加上可拖拽的缩放边和最大化，所以边缘、四角、最大化按钮和 Windows Snap 都能用。不强制切换全屏或窗口，也不另做一套标题栏。宽高比不限制。客户区最小是 **640×360** 物理像素，外框限制按当时的窗口样式和 DPI 换算。位置和大小不写入配置，重启后仍是游戏自己的窗口。
+
+全屏时卸下缩放框。回到窗口化，或者游戏重建了窗口句柄，会再挂上。不改摄像机、画布、界面布局、渲染、`Time.timeScale`、回合计时和动画播放。拖拽过程中会尽量跟着重画，松手后的尺寸以游戏处理完的窗口消息为准。
+
+缩放框挂不上时，日志里只有限频的 `[Window]` 警告，加速补丁照常打。要回到原来的窗口行为，把 `Window.Enabled` 设成 `false` 再重启。非 Windows 平台会留一条警告，然后什么都不改。启动日志的 awake 行里有 `Window=True`，挂上以后有 `[Window] attached`。
 
 ## 探针怎么记
 
@@ -40,7 +48,7 @@ BepInEx 5 插件，给 Pokémon TCG Live 的局外表现动画做倍率或跳过
 dotnet build src/PTCGL.FastAnimation/PTCGL.FastAnimation.csproj -c Release -p:CopyPluginToGame=true
 ```
 
-DLL 会复制到游戏的 `BepInEx\plugins\PTCGL.FastAnimation.dll`。游戏正在运行时文件会被锁住，先退出再编译。重启游戏后，日志里应出现 `PTCGL.FastAnimation 0.3.0 awake`，且兑换码 mod 仍是 `Chainloader` 加载的另一个插件。
+DLL 会复制到游戏的 `BepInEx\plugins\PTCGL.FastAnimation.dll`。游戏正在运行时文件会被锁住，先退出再编译。重启游戏后，日志里应出现 `PTCGL.FastAnimation 0.4.0 awake`，且兑换码 mod 仍是 `Chainloader` 加载的另一个插件。
 
 ## License
 

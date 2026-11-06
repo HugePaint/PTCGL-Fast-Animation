@@ -11,6 +11,7 @@ namespace PTCGL.FastAnimation.Config
         public ConfigEntry<bool> SpeedRewardPopups { get; }
         public ConfigEntry<bool> SpeedMissionRewards { get; }
         public ConfigEntry<bool> SpeedCurrencyFlight { get; }
+        public ConfigEntry<bool> WindowEnabled { get; }
         public ConfigEntry<bool> EnableProbe { get; }
         public ConfigEntry<bool> LogEntryPoints { get; }
         public ConfigEntry<bool> LogAnimatorClips { get; }
@@ -54,6 +55,12 @@ namespace PTCGL.FastAnimation.Config
                 "CurrencyFlight",
                 true,
                 "Speed or skip currency icons flying to the top bar.");
+
+            WindowEnabled = config.Bind(
+                "Window",
+                "Enabled",
+                true,
+                "Windows only. While the game is windowed, keep its current decorations and add a resizable frame plus maximize so edges, corners, maximize, and Snap work. Minimum client size is 640x360 physical pixels. Fullscreen is not forced; the frame is removed outside windowed mode and attached again when the game returns to windowed mode or recreates the window. Size and position are not saved. Restart required.");
 
             EnableProbe = config.Bind(
                 "Probe",

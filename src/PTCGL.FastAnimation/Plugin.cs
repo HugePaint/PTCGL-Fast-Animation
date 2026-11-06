@@ -1,3 +1,4 @@
+using System;
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -5,6 +6,7 @@ using PTCGL.FastAnimation.Compat;
 using PTCGL.FastAnimation.Config;
 using PTCGL.FastAnimation.Probe;
 using PTCGL.FastAnimation.Speed;
+using PTCGL.FastAnimation.Window;
 using UnityEngine;
 
 namespace PTCGL.FastAnimation
@@ -14,7 +16,7 @@ namespace PTCGL.FastAnimation
     {
         public const string PluginGuid = "com.ptcgl.fastanimation";
         public const string PluginName = "PTCGL.FastAnimation";
-        public const string PluginVersion = "0.3.0";
+        public const string PluginVersion = "0.4.0";
 
         internal static ManualLogSource Log = null!;
         internal static PluginConfig Cfg = null!;
@@ -26,7 +28,7 @@ namespace PTCGL.FastAnimation
             AnimationCatalog.Reset();
 
             var multiplier = Playback.Multiplier;
-            Log.LogInfo($"{PluginName} {PluginVersion} awake. Speed={multiplier} Skip={Cfg.SkipAnimations.Value} Booster={Cfg.SpeedBoosterCards.Value} Reward={Cfg.SpeedRewardPopups.Value} Mission={Cfg.SpeedMissionRewards.Value} Currency={Cfg.SpeedCurrencyFlight.Value} Probe={Cfg.EnableProbe.Value}.");
+            Log.LogInfo($"{PluginName} {PluginVersion} awake. Speed={multiplier} Skip={Cfg.SkipAnimations.Value} Booster={Cfg.SpeedBoosterCards.Value} Reward={Cfg.SpeedRewardPopups.Value} Mission={Cfg.SpeedMissionRewards.Value} Currency={Cfg.SpeedCurrencyFlight.Value} Window={Cfg.WindowEnabled.Value} Probe={Cfg.EnableProbe.Value}.");
             if (Cfg.SpeedMultiplier.Value > Playback.MaxMultiplier)
                 Log.LogWarning($"[Speed] multiplier {Cfg.SpeedMultiplier.Value} capped at {Playback.MaxMultiplier} so Animator events still fire.");
             Log.LogInfo("[Compat] Harmony id com.ptcgl.fastanimation. Does not patch FastStartup, CodeRedeem, Doorstop, or coupon APIs.");
@@ -40,6 +42,15 @@ namespace PTCGL.FastAnimation
                 var patched = SoftPatcher.Apply(harmony, msg => Log.LogInfo(msg));
                 Log.LogInfo($"[Probe] entry patches={patched}. Dump hotkey={Cfg.DumpHotkey.Value}.");
                 gameObject.AddComponent<ProbeBehaviour>();
+            }
+
+            try
+            {
+                WindowBootstrap.Start(this);
+            }
+            catch (Exception ex)
+            {
+                Log.LogWarning($"[Window] setup failed: {ex.Message}");
             }
         }
     }
